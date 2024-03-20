@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import EntrancePage from "./pages/EntrancePage";
 import VideoChatPage from "./pages/VideoChatPage";
-
+//
 const App = () => {
   return (
     <BrowserRouter>
