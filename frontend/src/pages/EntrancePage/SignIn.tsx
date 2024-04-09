@@ -1,6 +1,21 @@
 // 구글 로그인, 로그아웃, 로그인상태 기억
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "@firebase/auth";
+import app from "../firebaseConfig";
 
 const SignIn = () => {
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  const handleAuth = () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   return (
     <div className="bg-green-700 mt-32 pt-24 pb-36 grid justify-items-center">
       <h1 className="text-slate-50 text-3xl font-bold text-center mb-6">
@@ -23,10 +38,11 @@ const SignIn = () => {
           />
           <input
             className="w-full mb-3 p-4 border-gray-300 outline-none rounded box-border bg-green-800 border-none text-slate-100 text-xl cursor-pointer"
-            type="submit"
-            value="로그인"
-            onChange={(value) => console.log(value)}
+            type="button"
+            value="구글로 로그인"
+            onClick={handleAuth}
           />
+
           <p className="text-xs text-green-700 text-center">
             * 비밀번호를 타 사이트와 같이 사용할 경우 도용 위험이 있으니,
             <br />

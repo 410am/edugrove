@@ -10,12 +10,20 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@firebase/app": "^0.10.0",
+    "@react-oauth/google": "^0.12.1",
+    "axios": "^1.6.8",
+    "firebase": "^9.4.0",
+    "google-auth-library": "^3.1.2",
+    "jsonwebtoken": "^9.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3",
     "tailwindcss": "^3.4.1"
   },
   "devDependencies": {
+    "@types/firebase": "^3.2.1",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
     "@typescript-eslint/eslint-plugin": "^5.61.0",
