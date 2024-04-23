@@ -1,5 +1,4 @@
-import SignIn from "./SignIn";
-import GoogleLoginButton from "./gg";
+import MakeRoom from "./MakeRoom";
 
 const EntrancePage = () => {
   // 1. 로그인
@@ -12,8 +11,8 @@ const EntrancePage = () => {
       {/* <div>머여</div> */}
       {/* <div className="font-['Nanum Gothic']">된건가</div> */}
       {/* <div className="material-icons text-xs">upload</div> */}
-      <SignIn />
-      <GoogleLoginButton />
+
+      <MakeRoom />
     </div>
   );
 };
