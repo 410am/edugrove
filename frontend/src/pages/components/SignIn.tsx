@@ -1,7 +1,7 @@
 // 구글 로그인, 로그아웃, 로그인상태 기억
 import { signOut, onAuthStateChanged } from "@firebase/auth";
 import handleLogin from "./handleLogin";
-import { SetStateAction, useEffect, useState } from "react";
+import { SetStateAction, useEffect } from "react";
 
 const SignIn = () => {
   const { auth, user, setUser, handleAuth }: any = handleLogin();

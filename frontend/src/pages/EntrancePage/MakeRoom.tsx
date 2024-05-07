@@ -1,8 +1,8 @@
-// 방 만들기, 방 들어가기
+// 회의 만들기(로그인시 추가됨), 회의 참여(회의 id 또는 개인링크 이름 설정, 닉네임 설정
 import { useState } from "react";
-import Modal from "react-responsive-modal";
-import handleAuth from "../components/handleLogin";
+import Modal from "react-modal";
 import handleLogin from "../components/handleLogin";
+import { useRef } from "react";
 
 const MakeRoom = () => {
   // 로그인 의견 묻는 모달 오픈 여부
@@ -21,8 +21,37 @@ const MakeRoom = () => {
     }
   };
 
+  // 모달 닫기
   const closeModal = () => {
     setOpen(false);
+  };
+
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // 오버레이 클릭 시 모달 닫기
+  const handleOverlayClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.target === modalRef.current) {
+      closeModal();
+    }
+  };
+
+  // 모달 스타일
+  const modalStyles = {
+    content: {
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+      width: "50%",
+      height: "24%",
+      backgroundColor: "white",
+      border: "1px solid #ccc",
+      borderRadius: "8px",
+      padding: "20px",
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    },
   };
 
   return (
@@ -43,51 +72,34 @@ const MakeRoom = () => {
           />
           {open ? (
             <Modal
-              open={open}
-              onClose={closeModal}
-              closeOnOverlayClick={true}
-              center
-              showCloseIcon={false}
-              styles={{
-                overlay: {
-                  backgroundColor: "rgba(0, 0, 0, 0.5)",
-                },
-                modal: {
-                  position: "fixed",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  padding: "20px",
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                  backgroundColor: "white",
-                  maxWidth: "400px", // 모달 최대 너비
-                  width: "90%", // 모달 너비
-                },
-              }}
+              isOpen={open}
+              onRequestClose={closeModal}
+              style={modalStyles}
             >
-              <h2 className="text-center text-lg font-semibold m-1 mt-8">
-                로그인 후 이용 가능합니다.
-              </h2>
-              <p className="text-center text-sm m-1 mt-2 mb-9">
-                로그인 하시겠습니까?
-              </p>
-              <div className="flex justify-center mt-7 mb-6">
-                <button
-                  onClick={() => {
-                    setOpen(false);
-                    handleAuth();
-                  }}
-                  className="bg-green-600 text-slate-50 rounded-sm mx-4 p-2 h-9 w-1/3"
-                >
-                  네
-                </button>
-                <button
-                  onClick={closeModal}
-                  className="bg-red-600 text-slate-50 rounded-sm mx-4 p-2 h-9 w-1/3"
-                >
-                  아니요
-                </button>
+              <div ref={modalRef} onClick={handleOverlayClick}>
+                <h2 className="text-center text-lg font-semibold mt-2">
+                  로그인 후 이용 가능합니다.
+                </h2>
+                <p className="text-center text-sm  mt-2">
+                  로그인 하시겠습니까?
+                </p>
+                <div className="flex justify-center mt-10">
+                  <button
+                    onClick={() => {
+                      setOpen(false);
+                      handleAuth();
+                    }}
+                    className="bg-green-600 text-slate-50 rounded-sm mx-4 p-2 h-9 w-1/3"
+                  >
+                    네
+                  </button>
+                  <button
+                    onClick={closeModal}
+                    className="bg-red-600 text-slate-50 rounded-sm mx-4 p-2 h-9 w-1/3"
+                  >
+                    아니요
+                  </button>
+                </div>
               </div>
             </Modal>
           ) : null}

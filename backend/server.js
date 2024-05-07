@@ -1,26 +1,32 @@
 const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
 const cors = require("cors");
 
 const app = express();
-const port = 3001; // 또는 다른 포트
+const httpServer = http.createServer(app);
+const port = process.env.PORT || 5173;
 
-// 모든 origin에 대해 CORS 허용
+// CORS 설정
 app.use(cors());
-app.use(express.json());
 
-//test
-app.post("/api/test", (req, res) => {
-  try {
-    const message = req.body.message;
-    console.log("Message from frontend:", message);
-    res.json({ response: "Hello from backend" });
-  } catch (error) {
-    console.error("An error occurred:", error);
-    res.status(500).send("Internal Server Error");
-  }
+// socket io server
+const io = new Server(httpServer, {
+  cors: {
+    origin: `http://localhost:${5173}`,
+  },
 });
-//test
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+io.on("connection", (socket) => {
+  console.log(`소켓 연결 성공!! User Connected : ${socket.id}`);
+  // 클라이언트로부터 메시지를 받았을 때 실행되는 이벤트
+  socket.on("message", (message) => {
+    console.log("받은 메시지:", message);
+    // 클라이언트에게 받은 메시지를 그대로 다시 보냄
+    socket.emit("message", message);
+  });
+});
+
+httpServer.listen(3000, () => {
+  console.log("서버 연결 성공!");
 });
