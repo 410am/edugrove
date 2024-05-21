@@ -18,12 +18,14 @@ const io = new Server(httpServer, {
 });
 
 io.on("connection", (socket) => {
-  console.log(`소켓 연결 성공!! User Connected : ${socket.id}`);
-  // 클라이언트로부터 메시지를 받았을 때 실행되는 이벤트
-  socket.on("message", (message) => {
-    console.log("받은 메시지:", message);
-    // 클라이언트에게 받은 메시지를 그대로 다시 보냄
-    socket.emit("message", message);
+  socket.on("enter_room", (RN) => {
+    socket.join(RN);
+    console.log(socket.rooms);
+    console.log(socket.adapter.rooms);
+    console.log("받은 메시지:", RN);
+    socket.emit("RN", RN);
+    // 여기부터 막힘
+    socket.on("chatMessage", (message) => socket.emit("newMessage", message));
   });
 });
 

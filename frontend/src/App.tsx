@@ -3,8 +3,6 @@ import EntrancePage from "./pages/EntrancePage";
 import VideoChatPage from "./pages/VideoChatPage";
 import NavBar from "./NavBar";
 import Modal from "react-modal";
-import io from "socket.io-client";
-import { ChangeEvent, useEffect, useState } from "react";
 
 const Layout = () => {
   return (
@@ -19,28 +17,6 @@ const Layout = () => {
 Modal.setAppElement("#root");
 
 const App = () => {
-  const socket = io("http://localhost:3000");
-  console.log(socket);
-  const [message, setMessage] = useState("");
-  const [receivedMessage, setReceivedMessage] = useState("");
-
-  useEffect(() => {
-    // 백엔드 서버로부터 받은 메시지를 처리하는 핸들러
-    socket.on("message", (message) => {
-      setReceivedMessage(message);
-    });
-  }, [message]);
-
-  // 메시지를 보내는 함수
-  const sendMessage = () => {
-    socket.emit("message", message);
-    setMessage(""); // 입력 필드 초기화
-  };
-
-  const handleRNSubmit = (e: ChangeEvent<HTMLInputElement>) => {
-    setMessage(e.target.value);
-  };
-
   return (
     <div>
       <BrowserRouter>
@@ -52,25 +28,6 @@ const App = () => {
           </Route>
         </Routes>
       </BrowserRouter>
-      <h1>WebSocket 통신 예제</h1>
-      <form
-        onSubmit={(e) => {
-          // send 누른 뒤 랜더링 방지
-          e?.preventDefault();
-        }}
-      >
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => {
-            handleRNSubmit(e);
-          }}
-        />
-        <button id="submit" type="submit" onClick={sendMessage}>
-          Send
-        </button>
-        <p>받은 메시지: {receivedMessage}</p>
-      </form>
     </div>
   );
 };
