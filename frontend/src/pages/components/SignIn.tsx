@@ -27,6 +27,7 @@ const SignIn = () => {
       .then(() => {
         setUser(null);
         localStorage.clear();
+        console.log(user);
       })
       .catch((error) => {
         alert(error.message);

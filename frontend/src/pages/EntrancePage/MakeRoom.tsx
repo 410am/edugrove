@@ -15,7 +15,7 @@ const MakeRoom = () => {
 
   const { user, handleAuth }: any = handleLogin();
 
-  const { message, setMessage } = useState("");
+  const [message, setMessage] = useState("");
 
   const socket = io("http://localhost:3000");
   console.log(socket);
@@ -39,10 +39,14 @@ const MakeRoom = () => {
   };
 
   const handleMakeRoom = () => {
-    socket.emit("enter_room", RN);
-    setRN("");
-    closeModal();
-    setSigninCardIsOpen(false);
+    if (nickname) {
+      socket.emit("enter_room", RN);
+      setRN("");
+      closeModal();
+      setSigninCardIsOpen(false);
+    } else {
+      alert("닉네임을 입력해 주세요.");
+    }
   };
 
   const modalRef = useRef<HTMLDivElement>(null);
@@ -124,86 +128,90 @@ const MakeRoom = () => {
                 className="w-full mb-3 p-4 border-gray-300 outline-none rounded box-border border-none text-xl cursor-pointer"
                 type="button"
                 value="회의 만들기"
-                onClick={() => setRNModalOpen(true)}
+                onClick={() =>
+                  //user로 하니 이유는 모르겠지만 동작하지 않아서 user name으로 바꾸니 동작했다
+                  user?.displayName
+                    ? setRNModalOpen(true)
+                    : setLoginModalOpen(true)
+                }
               />
-              {/* 회의 만들기 모달 */}
-              {RNModalOpen ? (
-                <Modal
-                  isOpen={RNModalOpen}
-                  onRequestClose={closeModal}
-                  style={modalStyles}
-                >
-                  <form
-                    onSubmit={(e) => {
-                      // send 누른 뒤 랜더링 방지
-                      e.preventDefault();
-                    }}
-                  >
-                    <div>회의 이름</div>
-                    <input
-                      className="border border-1"
-                      type="text"
-                      defaultValue={RN}
-                      onChange={(e) => {
-                        handleRNSubmit(e);
-                      }}
-                    />
-                    <div>회의 참여 닉네임</div>
-                    <input
-                      className="border border-1"
-                      type="text"
-                      defaultValue={user.displayName}
-                      onChange={(e) => {
-                        handleNicknameSubmit(e);
-                      }}
-                    />
-                    <button
-                      type="button"
-                      className=" w-full mb-3 p-4 border-gray-300 outline-none rounded box-border border-none text-xl cursor-pointer"
-                      id="submit"
-                      // type="submit"
-                      onClick={handleMakeRoom}
-                    >
-                      확인
-                    </button>
-                  </form>
-                </Modal>
-              ) : null}
               {/* 로그인 모달 */}
-              {loginModalOpen ? (
-                <Modal
-                  isOpen={loginModalOpen}
-                  onRequestClose={closeModal}
-                  style={modalStyles}
-                >
-                  <div ref={modalRef} onClick={handleOverlayClick}>
-                    <h2 className="text-center text-lg font-semibold mt-2">
-                      로그인 후 이용 가능합니다.
-                    </h2>
-                    <p className="text-center text-sm  mt-2">
-                      로그인 하시겠습니까?
-                    </p>
-                    <div className="flex justify-center mt-10">
-                      <button
-                        onClick={() => {
-                          setLoginModalOpen(false);
-                          handleAuth(setRNModalOpen);
-                        }}
-                        className="bg-green-600 text-slate-50 rounded-sm mx-4 p-2 h-9 w-1/3"
-                      >
-                        네
-                      </button>
 
-                      <button
-                        onClick={closeModal}
-                        className="bg-red-600 text-slate-50 rounded-sm mx-4 p-2 h-9 w-1/3"
-                      >
-                        아니요
-                      </button>
-                    </div>
+              <Modal
+                isOpen={loginModalOpen}
+                onRequestClose={closeModal}
+                style={modalStyles}
+              >
+                <div ref={modalRef} onClick={handleOverlayClick}>
+                  <h2 className="text-center text-lg font-semibold mt-2">
+                    로그인 후 이용 가능합니다.
+                  </h2>
+                  <p className="text-center text-sm  mt-2">
+                    로그인 하시겠습니까?
+                  </p>
+                  <div className="flex justify-center mt-10">
+                    <button
+                      onClick={() => {
+                        setLoginModalOpen(false);
+                        handleAuth(setRNModalOpen);
+                      }}
+                      className="bg-green-600 text-slate-50 rounded-sm mx-4 p-2 h-9 w-1/3"
+                    >
+                      네
+                    </button>
+
+                    <button
+                      onClick={closeModal}
+                      className="bg-red-600 text-slate-50 rounded-sm mx-4 p-2 h-9 w-1/3"
+                    >
+                      아니요
+                    </button>
                   </div>
-                </Modal>
-              ) : null}
+                </div>
+              </Modal>
+
+              {/* 회의 만들기 모달 */}
+
+              <Modal
+                isOpen={RNModalOpen}
+                onRequestClose={closeModal}
+                style={modalStyles}
+              >
+                <form
+                  onSubmit={(e) => {
+                    // send 누른 뒤 랜더링 방지
+                    e.preventDefault();
+                  }}
+                >
+                  <div>회의 이름</div>
+                  <input
+                    className="border border-1"
+                    type="text"
+                    defaultValue={RN}
+                    onChange={(e) => {
+                      handleRNSubmit(e);
+                    }}
+                  />
+                  <div>회의 참여 닉네임</div>
+                  <input
+                    className="border border-1"
+                    type="text"
+                    defaultValue={user?.displayName}
+                    onChange={(e) => {
+                      handleNicknameSubmit(e);
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className=" w-full mb-3 p-4 border-gray-300 outline-none rounded box-border border-none text-xl cursor-pointer"
+                    id="submit"
+                    // type="submit"
+                    onClick={handleMakeRoom}
+                  >
+                    확인
+                  </button>
+                </form>
+              </Modal>
             </div>
             <div className="actions flex border-t-2 border-solid border-gray-300"></div>
           </div>

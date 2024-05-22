@@ -1,3 +1,4 @@
+import SignIn from "../components/SignIn";
 import MakeRoom from "./MakeRoom";
 
 const EntrancePage = () => {
@@ -8,10 +9,6 @@ const EntrancePage = () => {
 
   return (
     <div>
-      {/* <div>머여</div> */}
-      {/* <div className="font-['Nanum Gothic']">된건가</div> */}
-      {/* <div className="material-icons text-xs">upload</div> */}
-
       <MakeRoom />
     </div>
   );
