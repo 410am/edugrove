@@ -3,22 +3,14 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   UserCredential,
-  User,
 } from "@firebase/auth";
 import app from "../firebaseConfig";
-import { useState } from "react";
-import { useUser } from "../../App";
+import { useUser } from "../../UserContext";
 
 const handleLogin = () => {
-  // const initialUserDataJson = localStorage.getItem("userData");
-  // const initialUserData = initialUserDataJson
-  //   ? JSON.parse(initialUserDataJson)
-  //   : {};
-
   const { user, setUser } = useUser();
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
-  // const [user, setUser] = useState<User | null>(initialUserData);
   console.log(user);
 
   // 로그인, user 정보 가져오기

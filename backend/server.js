@@ -22,10 +22,11 @@ io.on("connection", (socket) => {
     socket.join(RN);
     console.log(socket.rooms);
     console.log(socket.adapter.rooms);
-    console.log("받은 메시지:", RN);
     socket.emit("RN", RN);
-    // 여기부터 막힘
-    socket.on("chatMessage", (message) => socket.emit("newMessage", message));
+  });
+  socket.on("messages", (message, nickname) => {
+    console.log(message);
+    socket.emit("newMessage", message, nickname);
   });
 });
 

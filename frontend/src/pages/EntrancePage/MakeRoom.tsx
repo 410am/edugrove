@@ -1,9 +1,12 @@
 // 회의 만들기(로그인시 추가됨), 회의 참여(회의 id 또는 개인링크 이름 설정, 닉네임 설정
-import io from "socket.io-client";
+import io, { Socket } from "socket.io-client";
 import { ChangeEvent, useState } from "react";
 import Modal from "react-modal";
 import handleLogin from "../components/handleLogin";
 import { useRef } from "react";
+import VideoChatPage from "../VideoChatPage";
+import { HandleLoginReturnType } from "../../Types";
+import { DefaultEventsMap } from "@socket.io/component-emitter";
 
 const MakeRoom = () => {
   // 로그인 의견 묻는 모달 오픈 여부
@@ -13,23 +16,16 @@ const MakeRoom = () => {
   // signin card 숨김여부
   const [signinCardIsOpen, setSigninCardIsOpen] = useState(true);
 
-  const { user, handleAuth }: any = handleLogin();
+  const { user, handleAuth }: HandleLoginReturnType = handleLogin();
 
-  const [message, setMessage] = useState("");
-
-  const socket = io("http://localhost:3000");
+  const socket: Socket<DefaultEventsMap, DefaultEventsMap> = io(
+    "http://localhost:3000"
+  );
   console.log(socket);
-  const [RN, setRN] = useState("");
-  const [nickname, setNickname] = useState("");
-  // 회의 만들기
-  // const handleMakeRoom = () => {
-  //   if (localStorage.getItem("userData")) {
-  //     socket.emit("enter_room", RN);
-  //     setRN("");
-  //   } else {
-  //     setLoginModalOpen(true);
-  //   }
-  // };
+  const [RN, setRN] = useState<string>("");
+  const [nickname, setNickname] = useState(
+    user?.displayName ? user?.displayName : undefined
+  );
 
   // 모달 닫기
   // 이거 나중에 수정해야될듯
@@ -38,14 +34,19 @@ const MakeRoom = () => {
     setRNModalOpen(false);
   };
 
-  const handleMakeRoom = () => {
-    if (nickname) {
+  const handleMakeRoom = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e?.preventDefault();
+    if (nickname?.trim() === "") {
+      alert("닉네임을 입력해주세요.");
+    } else if (RN.trim() === "") {
+      alert("회의 이름을 입력해주세요.");
+    } else {
       socket.emit("enter_room", RN);
       setRN("");
       closeModal();
       setSigninCardIsOpen(false);
-    } else {
-      alert("닉네임을 입력해 주세요.");
     }
   };
 
@@ -99,17 +100,6 @@ const MakeRoom = () => {
   //닉네임 set
   const handleNicknameSubmit = (e: ChangeEvent<HTMLInputElement>) => {
     setNickname(e.target.value);
-  };
-
-  // 채팅 메시지 set
-  const handleMessageSubmit = (e: ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    setMessage(e.target.value);
-  };
-
-  // 채팅 메시지 보내기
-  const handleSendMessage = () => {
-    socket.emit("chatMessage", message);
   };
 
   return (
@@ -196,7 +186,7 @@ const MakeRoom = () => {
                   <input
                     className="border border-1"
                     type="text"
-                    defaultValue={user?.displayName}
+                    value={nickname}
                     onChange={(e) => {
                       handleNicknameSubmit(e);
                     }}
@@ -205,8 +195,7 @@ const MakeRoom = () => {
                     type="button"
                     className=" w-full mb-3 p-4 border-gray-300 outline-none rounded box-border border-none text-xl cursor-pointer"
                     id="submit"
-                    // type="submit"
-                    onClick={handleMakeRoom}
+                    onClick={(e) => handleMakeRoom(e)}
                   >
                     확인
                   </button>
@@ -216,36 +205,11 @@ const MakeRoom = () => {
             <div className="actions flex border-t-2 border-solid border-gray-300"></div>
           </div>
         ) : (
-          <div>
-            {RN}
-            <br />
-            <br />
-            {/* {nickname ? nickname : user.displayName} */}
-            {nickname}
-            <br />
-            <br />
-            <br />
-            채팅
-            <br />
-            {message}
-            <form action="">
-              <input
-                className="border border-1"
-                type="text"
-                onChange={(e) => {
-                  handleMessageSubmit(e);
-                }}
-              />
-              <button
-                type="button"
-                className=" w-full mb-3 p-4 border-gray-300 outline-none rounded box-border border-none text-xl cursor-pointer"
-                id="submit"
-                onClick={handleSendMessage}
-              >
-                확인
-              </button>
-            </form>
-          </div>
+          <VideoChatPage
+            RN={RN}
+            nickname={nickname ? nickname : null}
+            socket={socket}
+          />
         )}
       </div>
     </div>

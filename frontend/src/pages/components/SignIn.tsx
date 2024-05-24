@@ -2,16 +2,19 @@
 import { signOut, onAuthStateChanged } from "@firebase/auth";
 import handleLogin from "./handleLogin";
 import { SetStateAction, useEffect } from "react";
+import { User } from "@firebase/auth";
+import { HandleLoginReturnType } from "../../Types";
 
 const SignIn = () => {
-  const { auth, user, setUser, handleAuth }: any = handleLogin();
+  const { auth, user, setUser, handleAuth }: HandleLoginReturnType =
+    handleLogin();
 
   // 이해 안되는 부분
   useEffect(() => {
     // 사용자 인증 상태 변경을 확인하고 사용자 정보 업데이트
     const unsubscribe = onAuthStateChanged(
       auth,
-      (user: SetStateAction<null>) => {
+      (user: SetStateAction<User | null>) => {
         setUser(user);
       }
     );
@@ -50,7 +53,8 @@ const SignIn = () => {
           className="h-2/3 hover:bg-slate-100 hover:text-slate-950 text-slate-50 bg-slate-700 hover:border-transparent cursor-pointer tracking-widest p-2 uppercase border border-solid border-slate-300 rounded"
           type="button"
           value="구글로 로그인"
-          onClick={handleAuth}
+          // handleAuth에 undefined라도 넣어야하는거 해결해야할듯
+          onClick={() => handleAuth(undefined)}
         />
       ) : (
         <input
