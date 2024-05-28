@@ -19,14 +19,15 @@ const io = new Server(httpServer, {
 
 io.on("connection", (socket) => {
   socket.on("enter_room", (RN) => {
+    // 방에 입장
     socket.join(RN);
-    console.log(socket.rooms);
-    console.log(socket.adapter.rooms);
     socket.emit("RN", RN);
+    console.log(`User ${socket.id} joined room: ${RN}`);
   });
-  socket.on("messages", (message, nickname) => {
-    console.log(message);
-    socket.emit("newMessage", message, nickname);
+  // 메시지
+  socket.on("message", (message, RN, nickname) => {
+    console.log(io.sockets.adapter.rooms); // 방 정보 확인
+    io.to(RN).emit("newMessage", { nickname: nickname, message: message });
   });
 });
 

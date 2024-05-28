@@ -1,41 +1,22 @@
-import {
-  ChangeEvent,
-  JSXElementConstructor,
-  Key,
-  ReactElement,
-  ReactNode,
-  ReactPortal,
-  SetStateAction,
-  useState,
-} from "react";
-import MakeRoom from "../EntrancePage/MakeRoom";
+import { Key, useState } from "react";
 import { HandleEnterRoomType } from "../../Types";
 
 const VideoChatPage = ({ RN, nickname, socket }: HandleEnterRoomType) => {
   const [message, setMessage] = useState("");
-  const [newMessages, setNewMessages]: any = useState([]);
-  const [messageNickname, setMessageNickname] = useState("");
+  const [newMessages, setNewMessages] = useState<
+    { nickname: string; message: string }[]
+  >([]);
 
-  // // 채팅 메시지 set
-  // const handleMessageSubmit = (e: ChangeEvent<HTMLInputElement>) => {
-  //   setMessage(e.target.value);
-  // };
-
-  // // 채팅 메시지 보내기
-  // const handleSendMessage = () => {
-  //   socket.emit("chatMessage", message);
-  //   socket.on("message", (nm: SetStateAction<string>) => setNewMessage(nm));
-  // };
-
+  // 메시지 보내기
   const handleChatSubmit = () => {
-    socket.emit("messages", message, nickname);
-    socket.on("newMessage", (nm: string, nn: string) => {
-      setNewMessages([...newMessages, nm]);
-      console.log(newMessages);
-      setMessageNickname(nn);
-    });
+    socket.emit("message", message, RN, nickname);
     setMessage("");
   };
+
+  // 메시지 받기
+  socket.on("newMessage", (data: { nickname: string; message: string }) => {
+    setNewMessages([...newMessages, data]);
+  });
 
   return (
     <div>
@@ -48,14 +29,16 @@ const VideoChatPage = ({ RN, nickname, socket }: HandleEnterRoomType) => {
       <br />
       채팅
       <br />
-      {`${messageNickname} : `}
-      {newMessages.map(
-        (newMessage: string | undefined, index: Key | null | undefined) => (
-          <li className="list-none" key={index}>
-            {newMessage}
-          </li>
-        )
-      )}
+      {newMessages.map((newMessage, index) => (
+        <li
+          className={`list-none ${
+            newMessage.nickname === nickname ? "bg-green-200" : "bg-blue-400"
+          }`}
+          key={index}
+        >{`${newMessage.nickname === nickname ? "" : newMessage.nickname} : ${
+          newMessage.message
+        }`}</li>
+      ))}
       <form onSubmit={(e) => e.preventDefault()}>
         <input
           type="text"

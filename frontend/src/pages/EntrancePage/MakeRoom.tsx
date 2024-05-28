@@ -1,6 +1,6 @@
 // 회의 만들기(로그인시 추가됨), 회의 참여(회의 id 또는 개인링크 이름 설정, 닉네임 설정
 import io, { Socket } from "socket.io-client";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import Modal from "react-modal";
 import handleLogin from "../components/handleLogin";
 import { useRef } from "react";
@@ -15,12 +15,17 @@ const MakeRoom = () => {
   const [RNModalOpen, setRNModalOpen] = useState(false);
   // signin card 숨김여부
   const [signinCardIsOpen, setSigninCardIsOpen] = useState(true);
+  const [socket, setSocket] =
+    useState<Socket<DefaultEventsMap, DefaultEventsMap>>();
 
   const { user, handleAuth }: HandleLoginReturnType = handleLogin();
+  useEffect(() => {
+    const newSocket: Socket<DefaultEventsMap, DefaultEventsMap> = io(
+      "http://localhost:3000"
+    );
+    setSocket(newSocket);
+  }, []);
 
-  const socket: Socket<DefaultEventsMap, DefaultEventsMap> = io(
-    "http://localhost:3000"
-  );
   console.log(socket);
   const [RN, setRN] = useState<string>("");
   const [nickname, setNickname] = useState(
@@ -43,7 +48,7 @@ const MakeRoom = () => {
     } else if (RN.trim() === "") {
       alert("회의 이름을 입력해주세요.");
     } else {
-      socket.emit("enter_room", RN);
+      socket?.emit("enter_room", RN);
       setRN("");
       closeModal();
       setSigninCardIsOpen(false);
@@ -80,21 +85,14 @@ const MakeRoom = () => {
 
   // 방 만들기 부분 시작
 
-  // useEffect(() => {
   // 백엔드 서버로부터 받은 메시지를 처리하는 핸들러
-  socket.on("RN", (RN) => {
+  socket?.on("RN", (RN: string) => {
     setRN(RN);
   });
 
-  // return () => {
-  // 컴포넌트가 언마운트될 때 소켓 연결 종료
-  // socket.disconnect();
-  // };
-  // }, []);
-
   // 회의 이름 set
   const handleRNSubmit = (e: ChangeEvent<HTMLInputElement>) => {
-    setRN(e.target.value);
+    setRN(e.target.value.trim());
   };
 
   //닉네임 set

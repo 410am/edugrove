@@ -13,6 +13,7 @@
     "@firebase/app": "^0.10.0",
     "@react-oauth/google": "^0.12.1",
     "axios": "^1.6.8",
+    "classnames": "^2.5.1",
     "firebase": "^9.4.0",
     "google-auth-library": "^3.1.2",
     "jsonwebtoken": "^9.0.2",
