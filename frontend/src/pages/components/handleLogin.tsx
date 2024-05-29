@@ -11,7 +11,7 @@ const handleLogin = () => {
   const { user, setUser } = useUser();
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
-  console.log(user);
+  // console.log(user);
 
   // 로그인, user 정보 가져오기
   const handleAuth = (

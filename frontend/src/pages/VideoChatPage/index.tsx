@@ -1,4 +1,4 @@
-import { Key, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { HandleEnterRoomType } from "../../Types";
 
 const VideoChatPage = ({ RN, nickname, socket }: HandleEnterRoomType) => {
@@ -6,6 +6,7 @@ const VideoChatPage = ({ RN, nickname, socket }: HandleEnterRoomType) => {
   const [newMessages, setNewMessages] = useState<
     { nickname: string; message: string }[]
   >([]);
+  const localVideoRef = useRef<HTMLVideoElement>(null);
 
   // 메시지 보내기
   const handleChatSubmit = () => {
@@ -18,12 +19,40 @@ const VideoChatPage = ({ RN, nickname, socket }: HandleEnterRoomType) => {
     setNewMessages([...newMessages, data]);
   });
 
+  const getMedia = async () => {
+    try {
+      const myStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: true,
+      });
+      console.log(myStream);
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = myStream;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getMedia();
+  }, []);
+
   return (
     <div>
       {`${RN} 방`}
       <br />
       <br />
       {`${nickname} 님`}
+      <br />
+      <br />
+      <br />
+      <video
+        ref={localVideoRef}
+        autoPlay
+        playsInline
+        className="w-96 h-96"
+      ></video>
       <br />
       <br />
       <br />

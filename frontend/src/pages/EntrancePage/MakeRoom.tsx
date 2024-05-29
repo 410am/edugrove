@@ -26,7 +26,7 @@ const MakeRoom = () => {
     setSocket(newSocket);
   }, []);
 
-  console.log(socket);
+  // console.log(socket);
   const [RN, setRN] = useState<string>("");
   const [nickname, setNickname] = useState(
     user?.displayName ? user?.displayName : undefined
