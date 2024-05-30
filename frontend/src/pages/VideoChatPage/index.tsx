@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { HandleEnterRoomType } from "../../Types";
 
 const VideoChatPage = ({ RN, nickname, socket }: HandleEnterRoomType) => {
@@ -7,6 +7,10 @@ const VideoChatPage = ({ RN, nickname, socket }: HandleEnterRoomType) => {
     { nickname: string; message: string }[]
   >([]);
   const localVideoRef = useRef<HTMLVideoElement>(null);
+  const myStreamRef = useRef<MediaStream | null>(null);
+  const [mute, setMute] = useState<boolean>(true);
+  const [blind, setBlind] = useState<boolean>(true);
+  const [cameras, setCameras] = useState<MediaDeviceInfo[]>();
 
   // 메시지 보내기
   const handleChatSubmit = () => {
@@ -19,13 +23,32 @@ const VideoChatPage = ({ RN, nickname, socket }: HandleEnterRoomType) => {
     setNewMessages([...newMessages, data]);
   });
 
-  const getMedia = async () => {
+  const getCameras = async () => {
     try {
-      const myStream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: true,
-      });
-      console.log(myStream);
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      setCameras(devices.filter((device) => device.kind === "videoinput"));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // Stream
+  const getMedia = async (deviceId: any) => {
+    const initialConstrains = {
+      audio: true,
+      video: { facingMode: "user" },
+    };
+    const cameraConstrains = {
+      audio: true,
+      video: { deviceId: { exact: deviceId } },
+    };
+    try {
+      const myStream = await navigator.mediaDevices.getUserMedia(
+        deviceId ? cameraConstrains : initialConstrains
+      );
+      myStreamRef.current = myStream;
+      if (!deviceId) {
+        await getCameras();
+      }
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = myStream;
       }
@@ -35,8 +58,35 @@ const VideoChatPage = ({ RN, nickname, socket }: HandleEnterRoomType) => {
   };
 
   useEffect(() => {
-    getMedia();
+    getMedia(undefined);
   }, []);
+
+  // 내 소리 mute 하기
+  const handleMuteClick = () => {
+    if (myStreamRef.current) {
+      myStreamRef.current
+        .getAudioTracks()
+        .forEach((track) => (track.enabled = !track.enabled));
+      setMute(myStreamRef.current?.getAudioTracks()[0].enabled);
+    }
+  };
+
+  // 내 영상 끄기
+  const handleVideoClick = () => {
+    if (myStreamRef.current) {
+      myStreamRef.current
+        .getVideoTracks()
+        .forEach((track) => (track.enabled = !track.enabled));
+      setBlind(myStreamRef.current?.getVideoTracks()[0].enabled);
+    }
+  };
+
+  const cameraSelectHandler = async (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    console.log(e);
+    await getMedia(e);
+  };
 
   return (
     <div>
@@ -53,6 +103,17 @@ const VideoChatPage = ({ RN, nickname, socket }: HandleEnterRoomType) => {
         playsInline
         className="w-96 h-96"
       ></video>
+      <button onClick={handleMuteClick}>{mute ? "mute" : "unmute"}</button>
+      <button onClick={handleVideoClick}>
+        {blind ? "비디오 끄기" : "비디오 켜기"}
+      </button>
+      <select onChange={cameraSelectHandler}>
+        {cameras?.map((camera) => (
+          <option key={camera.deviceId} value={camera.label}>
+            {camera.label}
+          </option>
+        ))}
+      </select>
       <br />
       <br />
       <br />
