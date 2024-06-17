@@ -5,3 +5,10 @@
 body {
   font-family: "Nanum Gothic", sans-serif;
 }
+
+.bg-gradient-and-image {
+  background-image: url("./public/IMG/background_icons.png"),
+    linear-gradient(to bottom, #0c3e9f, #543bb7, #732c8c);
+  background-repeat: no-repeat;
+  background-size: cover, cover;
+}

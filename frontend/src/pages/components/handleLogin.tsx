@@ -6,6 +6,7 @@ import {
 } from "@firebase/auth";
 import app from "../firebaseConfig";
 import { useUser } from "../../UserContext";
+import { signOut } from "@firebase/auth";
 
 const handleLogin = () => {
   const { user, setUser } = useUser();
@@ -28,6 +29,19 @@ const handleLogin = () => {
         console.error(error);
       });
   };
-  return { auth, user, setUser, handleAuth };
+  // 로그아웃
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        setUser(null);
+        localStorage.clear();
+        console.log(user);
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
+  };
+
+  return { auth, user, setUser, handleAuth, handleLogout };
 };
 export default handleLogin;

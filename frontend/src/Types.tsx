@@ -1,7 +1,5 @@
 import { User, Auth } from "@firebase/auth";
 import { SetStateAction } from "react";
-import { Socket } from "socket.io";
-import { DefaultEventsMap } from "@socket.io/component-emitter";
 
 export interface HandleLoginReturnType {
   auth: Auth;
@@ -10,6 +8,7 @@ export interface HandleLoginReturnType {
   handleAuth: (
     f: React.Dispatch<React.SetStateAction<boolean>> | undefined
   ) => void;
+  handleLogout: () => void;
 }
 
 export interface HandleEnterRoomType {

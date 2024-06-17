@@ -35,13 +35,14 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
       }
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = myStream;
+        console.log("1번 완료");
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const makeConnection = async () => {
+  const makeConnection = () => {
     const peerConnection = new RTCPeerConnection();
     const myStream = myStreamRef.current;
     myStream
@@ -49,14 +50,23 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
       // 2. addTrack(addStream)
       .forEach((track) => peerConnection.addTrack(track, myStream));
     peerConnectionRef.current = peerConnection;
-    peerConnection.addEventListener("icecandidate", handleIce);
     peerConnection.addEventListener("track", handleTrackEvent);
+    peerConnection.addEventListener("icecandidate", handleIce);
+    if (peerConnection) console.log("2번 성공", peerConnection);
   };
 
   const handleTrackEvent = (event: RTCTrackEvent) => {
     console.log(event.streams[0]);
     if (peerVideoRef.current) {
       peerVideoRef.current.srcObject = event.streams[0];
+    }
+  };
+
+  const handleIce = (event: RTCPeerConnectionIceEvent) => {
+    if (event.candidate) {
+      socket.emit("ice", event.candidate, RN);
+      console.log("got ice candidate");
+      console.log(event.candidate);
     }
   };
 
@@ -87,60 +97,44 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
       return;
     // 3. create offer
     const offer = await peerConnectionRef.current.createOffer();
+    if (offer) console.log("3번 성공", offer);
     //  4. setLocalDescription
     await peerConnectionRef.current.setLocalDescription(offer);
-    console.log("sent the offer");
-    console.log(offer);
+    console.log("4번 성공", peerConnectionRef.current.localDescription);
     // 5. send offer
     socket.emit("offer", offer, RN);
   });
 
   // peer B
   socket.on("offer", async (offer: RTCSessionDescription) => {
-    await initCall();
+    if (!peerConnectionRef.current) {
+      await initCall();
+    }
     console.log(offer);
     console.log(peerConnectionRef);
-    if (!peerConnectionRef.current) return;
+    if (peerConnectionRef.current?.signalingState !== "stable") return;
     // 6. setRemoteDescription
-    await peerConnectionRef.current.setRemoteDescription(offer);
+    peerConnectionRef.current.setRemoteDescription(offer);
     console.log(peerConnectionRef.current);
 
     // 7. createAnswer
-    const answer = await peerConnectionRef.current?.createAnswer();
+    const answer = await peerConnectionRef.current.createAnswer();
     console.log("7. answer", answer);
-    peerConnectionRef.current?.setLocalDescription(answer);
+    peerConnectionRef.current.setLocalDescription(answer);
+
     socket.emit("answer", answer, RN);
   });
 
   socket.on("answer", async (answer: RTCSessionDescription) => {
     if (!peerConnectionRef.current) return;
-    console.log("answer 받음", answer);
+    console.log("answer 받음", peerConnectionRef.current);
     // 여기서 뭐 문제 있었고 Uncaught (in promise) DOMException: Cannot set remote answer in state stable
-    await peerConnectionRef.current?.setRemoteDescription(answer);
+    await peerConnectionRef.current.setRemoteDescription(answer);
   });
-
-  //   socket.on("offer", async (offer: RTCSessionDescription) => {
-  //     peerConnection?.setRemoteDescription(offer);
-  //     const answer = await peerConnection?.createAnswer();
-  //     peerConnection?.setLocalDescription(answer);
-  //     socket.emit("answer", answer, RN);
-  //   });
-
-  //   socket.on("answer", (answer: RTCSessionDescription) => {
-  //     peerConnection?.setRemoteDescription(answer);
-  //   });
-
-  const handleIce = (event: RTCPeerConnectionIceEvent) => {
-    if (event.candidate) {
-      socket.emit("ice", event.candidate, RN);
-      console.log("got ice candidate");
-      console.log(event.candidate);
-    }
-  };
 
   socket.on("ice", async (ice: RTCIceCandidateInit) => {
     if (!peerConnectionRef.current) return;
-    await peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(ice));
+    peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(ice));
     console.log("got ice candidate!!");
   });
 
@@ -175,9 +169,17 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
     }
   };
 
+  // 카메라 선택하기
   const cameraSelectHandler = async (e: ChangeEvent<HTMLSelectElement>) => {
-    console.log(e);
     await getMedia(e.target.value);
+    if (peerConnectionRef.current) {
+      // for my stream
+      const videoTrack = myStreamRef.current?.getVideoTracks()[0];
+      const videoSender = peerConnectionRef.current
+        .getSenders()
+        .find((sender) => sender.track?.kind === "video");
+      videoSender?.replaceTrack(videoTrack ? videoTrack : null);
+    }
   };
 
   return (

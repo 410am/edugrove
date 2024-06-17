@@ -1,13 +1,18 @@
 // 구글 로그인, 로그아웃, 로그인상태 기억
-import { signOut, onAuthStateChanged } from "@firebase/auth";
+import { onAuthStateChanged } from "@firebase/auth";
 import handleLogin from "./handleLogin";
 import { SetStateAction, useEffect } from "react";
 import { User } from "@firebase/auth";
 import { HandleLoginReturnType } from "../../Types";
 
 const SignIn = () => {
-  const { auth, user, setUser, handleAuth }: HandleLoginReturnType =
-    handleLogin();
+  const {
+    auth,
+    user,
+    setUser,
+    handleAuth,
+    handleLogout,
+  }: HandleLoginReturnType = handleLogin();
 
   // 이해 안되는 부분
   useEffect(() => {
@@ -23,19 +28,6 @@ const SignIn = () => {
     return () => unsubscribe();
   }, []); // 빈 배열을 전달하여 컴포넌트가 마운트될 때 한 번만 실행
   // 이해 안되는 부분
-
-  // 로그아웃
-  const handleLogout = () => {
-    signOut(auth)
-      .then(() => {
-        setUser(null);
-        localStorage.clear();
-        console.log(user);
-      })
-      .catch((error) => {
-        alert(error.message);
-      });
-  };
 
   return (
     <div className="flex items-center justify-center">
@@ -67,5 +59,4 @@ const SignIn = () => {
     </div>
   );
 };
-
 export default SignIn;

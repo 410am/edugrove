@@ -8,12 +8,21 @@ const httpServer = http.createServer(app);
 const port = process.env.PORT || 5173;
 
 // CORS 설정
-app.use(cors());
+app.use(
+  cors({
+    cors: {
+      origin: [
+        `http://localhost:${5173}`,
+        "https://all-monkeys-attack.loca.lt/",
+      ],
+    },
+  })
+);
 
 // socket io server
 const io = new Server(httpServer, {
   cors: {
-    origin: `http://localhost:${5173}`,
+    origin: [`http://localhost:${5173}`, "https://all-monkeys-attack.loca.lt"],
   },
 });
 
