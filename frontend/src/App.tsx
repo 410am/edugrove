@@ -22,10 +22,15 @@ const App = () => {
     <UserProvider>
       <BrowserRouter>
         <Routes>
-          <Route index element={<EntrancePage />} />
           <Route path="/" element={<Layout />}>
+            <Route index element={<EntrancePage />} />
             {/* 추후 meet 대신 room_34234 이런식으로 바뀌어야함 */}
-            {/* <Route path="/meet" element={<VideoChatPage />} /> */}
+            <Route
+              path="/meet"
+              element={
+                <VideoChatPage RN={null} nickname={null} socket={undefined} />
+              }
+            />
           </Route>
         </Routes>
       </BrowserRouter>

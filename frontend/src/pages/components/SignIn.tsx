@@ -33,11 +33,20 @@ const SignIn = () => {
     <div className="flex items-center justify-center">
       {/* 유저 프로필 사진 */}
       {user?.photoURL && (
-        <img
-          className="h-12 rounded-full p-1"
-          src={user.photoURL}
-          alt="user photo"
-        />
+        <div className="group">
+          <img
+            className="h-14 rounded-full p-2 mr-3"
+            src={user.photoURL}
+            alt="user photo"
+          />
+          <input
+            className="hidden group-hover:block absolute p-1 -translate-x-2 hover:bg-slate-100 hover:text-slate-950 text-slate-50 hover:border-transparent cursor-pointer border border-solid border-slate-300 rounded"
+            type="button"
+            value="로그아웃"
+            // handleAuth에 undefined라도 넣어야하는거 해결해야할듯
+            onClick={handleLogout}
+          />
+        </div>
       )}
       {/* 로그인, 로그아웃 */}
       {!user ? (
@@ -48,14 +57,13 @@ const SignIn = () => {
           // handleAuth에 undefined라도 넣어야하는거 해결해야할듯
           onClick={() => handleAuth(undefined)}
         />
-      ) : (
-        <input
-          className="h-2/3 hover:bg-slate-100 hover:text-slate-950 text-slate-50 bg-slate-700 hover:border-transparent cursor-pointer tracking-widest p-2 uppercase border border-solid border-slate-300 rounded"
-          type="button"
-          value="로그아웃"
-          onClick={handleLogout}
-        />
-      )}
+      ) : // <input
+      //   className="h-2/3 hover:bg-slate-100 hover:text-slate-950 text-slate-50 bg-slate-700 hover:border-transparent cursor-pointer tracking-widest p-2 uppercase border border-solid border-slate-300 rounded"
+      //   type="button"
+      //   value="로그아웃"
+      //   onClick={handleLogout}
+      // />
+      null}
     </div>
   );
 };

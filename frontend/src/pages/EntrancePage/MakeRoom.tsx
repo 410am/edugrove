@@ -38,6 +38,7 @@ const MakeRoom = () => {
   const closeModal = () => {
     setLoginModalOpen(false);
     setRNModalOpen(false);
+    setRN("");
   };
 
   const handleMakeRoom = (
@@ -74,12 +75,11 @@ const MakeRoom = () => {
       bottom: "auto",
       marginRight: "-50%",
       transform: "translate(-50%, -50%)",
-      width: "30%",
-      height: "24%",
+      width: "40%",
       backgroundColor: "#003465",
       border: "1px solid #ccc",
       color: "white",
-      borderRadius: "8px",
+      borderRadius: "25px",
       padding: "20px",
       boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
       overflow: "hidden",
@@ -92,6 +92,11 @@ const MakeRoom = () => {
   socket?.on("RN", (RN: string) => {
     setRN(RN);
   });
+
+  const handleTitle = (value: string) => {
+    setRNModalOpen(true);
+    return <div>{`${value}`}</div>;
+  };
 
   // 회의 이름 set
   const handleRNSubmit = (e: ChangeEvent<HTMLInputElement>) => {
@@ -108,7 +113,7 @@ const MakeRoom = () => {
       <div className="pt-24 pb-36 grid justify-items-center min-h-screen">
         {signinCardIsOpen ? (
           <div className="signin_card flex w-[35rem] h-[30rem] mx-0 my-auto rounded-3xl border-solid border-separate border-2 border-gray-300 border-opacity-30 shadow-xl justify-center items-center bg-slate-300 bg-opacity-20">
-            <div className="py-5 grid grid-rows-3 items-center text-center">
+            <div className="py-5 grid items-end text-center h-full w-full">
               <h2
                 className="text-slate-100 text-4xl font-semibold"
                 style={{ fontFamily: "Jost, sans-serif" }}
@@ -117,7 +122,7 @@ const MakeRoom = () => {
               </h2>
               <div>
                 <input
-                  className="w-[18rem] mb-6 p-4 rounded-xl bg-fuchsia-800 text-xl text-slate-100 shadow-2xl cursor-pointer hover:bg-slate-100 hover:text-fuchsia-800 hover:font-semibold"
+                  className="w-[18rem] mb-8 p-4 rounded-xl bg-fuchsia-800 text-xl text-slate-100 shadow-2xl cursor-pointer hover:bg-slate-100 hover:text-fuchsia-800 hover:font-semibold"
                   type="button"
                   value="회의 참여"
                   onClick={() => setRNModalOpen(true)}
@@ -134,49 +139,67 @@ const MakeRoom = () => {
                   }
                 />
               </div>
-              {!user ? (
-                <button onClick={() => handleAuth(undefined)}>
-                  <div className="grid grid-rows-2 justify-center justify-items-center pt-5">
-                    <img
-                      src="../public/IMG/google_logo.png"
-                      alt="구글로 로그인"
-                      className="w-10"
-                    />
-                    <p className="text-slate-100 pt-2">구글로 로그인</p>
-                  </div>
-                </button>
-              ) : (
-                <button onClick={handleLogout}>
-                  <p className="text-slate-100 hover:underline">로그아웃</p>
-                </button>
-              )}
+              {
+                !user ? (
+                  <button
+                    onClick={() => handleAuth(undefined)}
+                    className="mb-2"
+                  >
+                    <div className="grid grid-rows-2 justify-center justify-items-center">
+                      <img
+                        src="../public/IMG/google_logo.png"
+                        alt="구글로 로그인"
+                        className="w-8"
+                      />
+                      <p className="text-slate-100 pt-2 text-sm">
+                        구글로 로그인
+                      </p>
+                    </div>
+                  </button>
+                ) : (
+                  <div></div>
+                )
+                // <button onClick={handleLogout}>
+                //   <p className="text-slate-100 hover:underline">로그아웃</p>
+                // </button>
+              }
               {/* 로그인 모달 */}
               <Modal
                 isOpen={loginModalOpen}
                 onRequestClose={closeModal}
                 style={modalStyles}
               >
-                <div ref={modalRef} onClick={handleOverlayClick}>
-                  <h2 className="text-center text-lg font-semibold mt-2">
+                <div
+                  className="flex justify-end px-3 text-2xl"
+                  onClick={closeModal}
+                >
+                  x
+                </div>
+                <div
+                  ref={modalRef}
+                  onClick={handleOverlayClick}
+                  className="p-8"
+                >
+                  <h2 className="text-center text-lg font-semibold">
                     로그인 후 이용 가능합니다.
                   </h2>
-                  <p className="text-center text-sm  mt-2">
+                  <p className="text-center text-sm  mt-2 pb-8">
                     로그인 하시겠습니까?
                   </p>
-                  <div className="flex justify-center mt-10">
+                  <div className="flex justify-center mt-8 mb-4">
                     <button
                       onClick={() => {
                         setLoginModalOpen(false);
                         handleAuth(setRNModalOpen);
                       }}
-                      className="bg-green-600 text-slate-50 rounded-sm mx-4 p-2 h-9 w-1/3"
+                      className="bg-blue-400  bg-opacity-25 hover:bg-green-600 text-slate-50 rounded-lg mx-4 p-2 h-9 w-20 mr-18"
                     >
                       네
                     </button>
 
                     <button
                       onClick={closeModal}
-                      className="bg-red-600 text-slate-50 rounded-sm mx-4 p-2 h-9 w-1/3"
+                      className="bg-blue-400 bg-opacity-25 hover:bg-gray-600 text-slate-50 rounded-lg mx-4 p-2 h-9 w-20"
                     >
                       아니요
                     </button>
@@ -189,33 +212,51 @@ const MakeRoom = () => {
                 onRequestClose={closeModal}
                 style={modalStyles}
               >
+                <div
+                  className="flex justify-end px-3 text-2xl"
+                  onClick={closeModal}
+                >
+                  x
+                </div>
+                {/* <div className="text-2xl flex justify-center p-2 pt-4">
+                  회의 참가
+                </div> */}
                 <form
                   onSubmit={(e) => {
                     // send 누른 뒤 랜더링 방지
                     e.preventDefault();
                   }}
+                  className="p-6 grid place-content-center"
                 >
-                  <div>회의 이름</div>
-                  <input
-                    className="border border-1"
-                    type="text"
-                    defaultValue={RN}
-                    onChange={(e) => {
-                      handleRNSubmit(e);
-                    }}
-                  />
-                  <div>회의 참여 닉네임</div>
-                  <input
-                    className="border border-1"
-                    type="text"
-                    defaultValue={nickname}
-                    onChange={(e) => {
-                      handleNicknameSubmit(e);
-                    }}
-                  />
+                  <div className="mb-10">
+                    <div className="py-5 flex justify-end">
+                      <div className="pr-4 text-2xl">회의 이름</div>
+                      <input
+                        className="border border-1 rounded-md pl-2 text-gray-900"
+                        type="text"
+                        defaultValue={RN}
+                        onChange={(e) => {
+                          handleRNSubmit(e);
+                        }}
+                      />
+                    </div>
+
+                    <div className="py-5 flex justify-end">
+                      <div className="pr-4 text-2xl">닉네임</div>
+                      <input
+                        className="border border-1 rounded-md pl-2 text-gray-900"
+                        type="text"
+                        placeholder={nickname}
+                        defaultValue={nickname}
+                        onChange={(e) => {
+                          handleNicknameSubmit(e);
+                        }}
+                      />
+                    </div>
+                  </div>
                   <button
                     type="button"
-                    className=" w-full mb-3 p-4 border-gray-300 outline-none rounded box-border border-none text-xl cursor-pointer"
+                    className="p-4 w-fit translate-x-28 hover:bg-blue-400 hover:bg-opacity-25 border-solid rounded-xl text-2xl cursor-pointer"
                     id="submit"
                     onClick={(e) => handleMakeRoom(e)}
                   >
