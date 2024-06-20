@@ -13,11 +13,12 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
+  const screenTrackRef = useRef<MediaStreamTrack | null>(null);
 
   // Stream
   const getMedia = async (deviceId?: string) => {
     const initialConstraints = {
-      audio: true,
+      // audio: true,
       video: { facingMode: "user" },
     };
     const cameraConstraints = {
@@ -181,9 +182,73 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
       videoSender?.replaceTrack(videoTrack ? videoTrack : null);
     }
   };
+  // 화면 공유 시작
+  const startScreenShare = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        audio: false, // 대부분의 브라우저는 화면 공유 시 오디오를 지원하지 않습니다.
+      });
+      return stream;
+    } catch (error) {
+      console.error("Error sharing screen:", error);
+      return null;
+    }
+  };
+
+  const handleScreenShare = async () => {
+    const screenStream = await startScreenShare();
+    if (screenStream && peerConnectionRef.current) {
+      // 화면 공유 트랙을 screenTrackRef에 저장
+      screenTrackRef.current = screenStream.getVideoTracks()[0];
+
+      // 기존 트랙 제거 및 화면 공유 트랙 추가
+      peerConnectionRef.current.getSenders().forEach((sender: RTCRtpSender) => {
+        if (sender.track?.kind === "video") {
+          sender.replaceTrack(screenTrackRef.current);
+        }
+      });
+
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = screenStream;
+      }
+    }
+  };
+
+  // 화면 공유 중지
+  const stopScreenShare = async () => {
+    console.log("stopScreenShare 호출됨");
+    if (screenTrackRef.current) {
+      console.log("화면 공유 트랙 중지");
+      screenTrackRef.current.stop();
+
+      console.log("카메라 스트림 가져오기");
+      const cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+
+      const cameraTrack = cameraStream.getVideoTracks()[0];
+      console.log("트랙 교체, 카메라 트랙:", cameraTrack);
+
+      const sender = peerConnectionRef.current
+        ?.getSenders()
+        .find((s) => s.track?.kind === "video");
+
+      if (sender) {
+        console.log("트랙 교체, sender:", sender);
+        sender.replaceTrack(cameraTrack);
+      }
+      getMedia();
+      screenTrackRef.current = null;
+      console.log("화면 공유 트랙 중지 및 교체 완료");
+    } else {
+      console.log("중지할 화면 공유 트랙이 없음");
+    }
+  };
 
   return (
-    <div>
+    <div className="bg-gradient">
       {`${RN} 방`}
       <br />
       <br />
@@ -209,6 +274,8 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
       <button onClick={handleVideoClick}>
         {blind ? "비디오 끄기" : "비디오 켜기"}
       </button>
+      <button onClick={handleScreenShare}>Start Screen Share</button>
+      <button onClick={stopScreenShare}>Stop Screen Share</button>
       <select onChange={cameraSelectHandler}>
         {cameras?.map((camera) => (
           <option key={camera.deviceId} value={camera.deviceId}>

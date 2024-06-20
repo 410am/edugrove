@@ -12,3 +12,9 @@ body {
   background-repeat: no-repeat;
   background-size: cover, cover;
 }
+
+.bg-gradient {
+  background-image: linear-gradient(to bottom, #0c3e9f, #543bb7, #732c8c);
+  background-repeat: no-repeat;
+  background-size: cover, cover;
+}

@@ -11,10 +11,7 @@ const port = process.env.PORT || 5173;
 app.use(
   cors({
     cors: {
-      origin: [
-        `http://localhost:${5173}`,
-        "https://all-monkeys-attack.loca.lt/",
-      ],
+      origin: [`http://localhost:${5173}`],
     },
   })
 );
@@ -22,7 +19,7 @@ app.use(
 // socket io server
 const io = new Server(httpServer, {
   cors: {
-    origin: [`http://localhost:${5173}`, "https://all-monkeys-attack.loca.lt"],
+    origin: `http://localhost:${5173}`,
   },
 });
 

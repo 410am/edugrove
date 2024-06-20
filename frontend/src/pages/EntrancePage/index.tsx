@@ -1,4 +1,3 @@
-import SignIn from "../components/SignIn";
 import MakeRoom from "./MakeRoom";
 
 const EntrancePage = () => {
