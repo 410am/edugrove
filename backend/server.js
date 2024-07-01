@@ -11,7 +11,8 @@ const port = process.env.PORT || 5173;
 app.use(
   cors({
     cors: {
-      origin: [`http://localhost:${5173}`],
+      // origin: [`http://localhost:${5173}`],
+      origin: "*",
     },
   })
 );
@@ -19,17 +20,20 @@ app.use(
 // socket io server
 const io = new Server(httpServer, {
   cors: {
-    origin: `http://localhost:${5173}`,
+    // origin: [`http://localhost:${5173}`],
+    origin: "*",
   },
 });
 
 io.on("connection", (socket) => {
   socket.on("enter_room", (RN) => {
     // 방에 입장
-    socket.join(RN);
-    socket.emit("RN", RN);
     console.log(`User ${socket.id} joined room: ${RN}`);
+    socket.emit("RN", RN);
+    socket.join(RN);
+
     socket.to(RN).emit("welcome");
+    console.log(io.sockets.adapter.rooms);
   });
   socket.on("offer", (offer, RN) => {
     socket.to(RN).emit("offer", offer);
