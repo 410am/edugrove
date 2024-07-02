@@ -110,8 +110,8 @@ const MakeRoom = () => {
 
   return (
     <div className="bg-gradient-and-image min-h-screen">
-      <div className="pt-24 pb-36 grid justify-items-center min-h-screen">
-        {signinCardIsOpen ? (
+      {signinCardIsOpen ? (
+        <div className="pt-24 pb-36 grid justify-items-center min-h-screen">
           <div className="signin_card flex w-[35rem] h-[30rem] mx-0 my-auto rounded-3xl border-solid border-separate border-2 border-gray-300 border-opacity-30 shadow-xl justify-center items-center bg-slate-300 bg-opacity-20">
             <div className="py-5 grid items-end text-center h-full w-full">
               <h2
@@ -267,14 +267,14 @@ const MakeRoom = () => {
             </div>
             <div className="actions flex border-t-2 border-solid border-gray-300"></div>
           </div>
-        ) : (
-          <VideoChatPage
-            RN={RN}
-            nickname={nickname ? nickname : null}
-            socket={socket}
-          />
-        )}
-      </div>
+        </div>
+      ) : (
+        <VideoChatPage
+          RN={RN}
+          nickname={nickname ? nickname : null}
+          socket={socket}
+        />
+      )}
     </div>
   );
 };
