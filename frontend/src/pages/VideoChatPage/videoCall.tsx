@@ -1,5 +1,6 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { HandleEnterRoomType } from "../../Types";
+import { HandleEnterRoomType, HandleLoginReturnType } from "../../Types";
+import handleLogin from "../components/handleLogin";
 
 const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
   const [message, setMessage] = useState("");
@@ -14,6 +15,8 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const screenTrackRef = useRef<MediaStreamTrack | null>(null);
+
+  const { user, handleAuth }: HandleLoginReturnType = handleLogin();
 
   // Stream
   const getMedia = async (deviceId?: string) => {
@@ -270,36 +273,147 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
     }
   };
 
+  //   return (
+  //     <div className="h-screen overflow-hidden">
+  //       <div className="text-3xl text-stone-800 border-2 border-solid bg-slate-300 bg-opacity-40 border-gray-300 border-opacity-30 w-fit px-12 py-3 rounded-b-3xl flex justify-center mx-14">{`${RN}`}</div>
+  //       <br />
+  //       {/* <br />
+  //     {`${nickname} 님`}
+  //     <br />
+  //     <br /> */}
+  //       {/* peer's stream */}
+  //       <div className="relative w-full overflow-hidden h-2/3 flex justify-center mb-6 mt-3">
+  //         <video
+  //           className="absolute w-10/12 object-center object-cover"
+  //           // ref={peerVideoRef}
+  //           ref={localVideoRef}
+  //           autoPlay
+  //           playsInline
+  //         ></video>
+  //         <div className="bg-red-400 h-40 w-60 self-end absolute right-[7.5rem] overflow-hidden">
+  //           <video ref={localVideoRef} autoPlay playsInline></video>
+  //         </div>
+  //       </div>
+  //       {/* <br />
+  //         peer's stream */}
+  //       <video
+  //         ref={peerVideoRef}
+  //         autoPlay
+  //         playsInline
+  //         className="w-96 h-96"
+  //       ></video>
+  //       <br />
+  //       my stream
+  //       <video
+  //         ref={localVideoRef}
+  //         autoPlay
+  //         playsInline
+  //         className="w-96 h-96"
+  //       ></video>
+  //       <button onClick={handleMuteClick}>{mute ? "mute" : "unmute"}</button>
+  //       {/* 사운드 옵션 */}
+  //       {/* <button onClick={handleMuteClick}>{mute ? "mute" : "unmute"}</button>
+  //     <button onClick={handleVideoClick}>
+  //       {blind ? "비디오 끄기" : "비디오 켜기"}
+  //     </button>
+  //     <select onChange={cameraSelectHandler}>
+  //     </button> */}
+  //       {/* 카메라 선택 */}
+  //       {/* <select onChange={cameraSelectHandler}>
+  //       {cameras?.map((camera) => (
+  //         <option key={camera.deviceId} value={camera.deviceId}>
+  //           {camera.label}
+  //         </option>
+  //       ))}
+  //     </select>
+  //     <br />
+  //     <br />
+  //     <br />
+  //     채팅
+  //     <br />
+  //     </select> */}
+  //       <div className="w-full flex justify-center">
+  //         <div className="text-3xl text-stone-800 border-solid bg-slate-300 bg-opacity-40 border-gray-300 border-opacity-30 border-2 w-5/6 py-2 rounded-t-full flex justify-center h-30">
+  //           <button className="w-24 text-lg mx-6 grid grid-rows-2 justify-items-center h-fit m-2 translate-x-20">
+  //             <img className="w-10 m-1" src="../public/IMG/mic.png" alt="mute" />
+  //             {mute ? "음소거 해제" : "음소거"}
+  //           </button>
+  //           <button className="w-24 text-lg mx-6 grid grid-rows-2 justify-items-center h-fit m-2 translate-x-20">
+  //             <img
+  //               className="w-10 m-1"
+  //               src="../public/IMG/video.png"
+  //               alt="video"
+  //             />
+  //             {blind ? "카메라 켜기" : "카메라 끄기"}
+  //           </button>
+  //           <button className="w-24 text-lg mx-6 grid grid-rows-2 justify-items-center h-fit m-2 translate-x-20">
+  //             <img className="w-10 m-1" src="../public/IMG/chat.png" alt="chat" />
+  //             채팅
+  //           </button>
+  //           <button className="w-24 text-lg mx-6 grid grid-rows-2 justify-items-center h-fit m-2 translate-x-20">
+  //             <img
+  //               className="w-10 m-1"
+  //               src="../public/IMG/screen_share.png"
+  //               alt="screen share"
+  //             />
+  //             화면 공유
+  //           </button>
+  //           <button className="w-24 text-lg mx-6 grid grid-rows-2 justify-items-center h-fit m-2 translate-x-44">
+  //             <img
+  //               className="w-10 m-1"
+  //               src="../public/IMG/logout.png"
+  //               alt="mute"
+  //             />
+  //             나가기
+  //           </button>
+  //         </div>
+  //       </div>
+  //       {/* 채팅 */}
+  //       {/* <br />
+  //     {newMessages.map((newMessage, index) => (
+  //       <li
+  //         className={`list-none ${
+  // @@ -238,7 +272,7 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
+  //         onChange={(e) => setMessage(e.target.value)}
+  //       />
+  //       <button onClick={handleChatSubmit}>확인</button>
+  //     </form>
+  //     </form> */}
+  //     </div>
+  // );
+
   return (
-    <div className="bg-gradient">
-      {`${RN} 방`}
-      <br />
-      <br />
-      {`${nickname} 님`}
-      <br />
-      <br />
-      peer's stream
-      <video
-        ref={peerVideoRef}
-        autoPlay
-        playsInline
-        className="w-96 h-96"
-      ></video>
-      <br />
-      my stream
-      <video
-        ref={localVideoRef}
-        autoPlay
-        playsInline
-        className="w-96 h-96"
-      ></video>
-      <button onClick={handleMuteClick}>{mute ? "mute" : "unmute"}</button>
+    <div className="h-screen overflow-hidden">
+      <div className="text-3xl text-stone-800 border-2 border-solid bg-slate-300 bg-opacity-40 border-gray-300 border-opacity-30 w-fit px-12 py-3 rounded-b-3xl flex justify-center mx-14">{`${RN}`}</div>
+      {/* {`${nickname} 님`} */}
+      {/* peer's stream */}
+      <div className="relative w-full overflow-hidden h-[36rem] flex justify-center mb-1">
+        <video
+          className="absolute w-[65rem] object-center object-cover"
+          // ref={peerVideoRef}
+          ref={localVideoRef}
+          autoPlay
+          playsInline
+        ></video>
+        <div className=" h-40 w-[65rem] self-end absolute overflow-hidden grid justify-end">
+          <video
+            className="w-60"
+            ref={localVideoRef}
+            autoPlay
+            playsInline
+          ></video>
+        </div>
+      </div>
+
+      {/* 사운드 옵션 */}
+      {/* <button onClick={handleMuteClick}>{mute ? "mute" : "unmute"}</button>
       <button onClick={handleVideoClick}>
         {blind ? "비디오 끄기" : "비디오 켜기"}
       </button>
-      <button onClick={handleScreenShare}>Start Screen Share</button>
-      <button onClick={stopScreenShare}>Stop Screen Share</button>
       <select onChange={cameraSelectHandler}>
+      </button> */}
+      {/* 카메라 선택 */}
+      {/* <select onChange={cameraSelectHandler}>
         {cameras?.map((camera) => (
           <option key={camera.deviceId} value={camera.deviceId}>
             {camera.label}
@@ -311,6 +425,88 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
       <br />
       채팅
       <br />
+      </select> */}
+      <div className="w-full flex justify-center">
+        <div className="text-3xl text-slate-100 border-solid bg-slate-300 bg-opacity-40 border-gray-300 border-opacity-30 border-2 w-5/6 py-2 rounded-t-full flex justify-center h-52">
+          {!user ? (
+            <button
+              onClick={() => handleAuth(undefined)}
+              className="mb-20 -translate-x-20"
+            >
+              <div className="flex items-center ">
+                <img
+                  src="../public/IMG/google_logo.png"
+                  alt="구글로 로그인"
+                  className="w-8"
+                />
+                <p className="text-slate-100 text-lg  m-3">구글로 로그인</p>
+              </div>
+            </button>
+          ) : (
+            <div></div>
+          )}
+          <button
+            onClick={handleMuteClick}
+            className="w-24 text-lg mx-4 grid grid-rows-2 justify-items-center h-fit m-2 "
+          >
+            {mute ? (
+              <img
+                className="w-10 m-1"
+                src="../public/IMG/mic.png"
+                alt="mute"
+              />
+            ) : (
+              <img
+                className="w-10 m-1"
+                src="../public/IMG/mic_off.png"
+                alt="unmute"
+              />
+            )}
+            {mute ? "음소거" : "음소거 해제"}
+          </button>
+          <button
+            onClick={handleVideoClick}
+            className="w-24 text-lg mx-4 grid grid-rows-2 justify-items-center h-fit m-2 "
+          >
+            {blind ? (
+              <img
+                className="w-10 m-1"
+                src="../public/IMG/video.png"
+                alt="video"
+              />
+            ) : (
+              <img
+                className="w-10 m-1"
+                src="../public/IMG/video_off.png"
+                alt="video"
+              />
+            )}
+            {blind ? "카메라 끄기" : "카메라 켜기"}
+          </button>
+          <button className="w-24 text-lg mx-4 grid grid-rows-2 justify-items-center h-fit m-2 ">
+            <img className="w-10 m-1" src="../public/IMG/chat.png" alt="chat" />
+            채팅
+          </button>
+          <button className="w-24 text-lg mx-4 grid grid-rows-2 justify-items-center h-fit m-2 ">
+            <img
+              className="w-10 m-1"
+              src="../public/IMG/screen_share.png"
+              alt="screen share"
+            />
+            화면 공유
+          </button>
+          <button className="w-24 text-lg mx-4 grid grid-rows-2 justify-items-center h-fit m-2 translate-x-20">
+            <img
+              className="w-10 m-1"
+              src="../public/IMG/logout.png"
+              alt="mute"
+            />
+            나가기
+          </button>
+        </div>
+      </div>
+      {/* 채팅 */}
+      {/* <br />
       {newMessages.map((newMessage, index) => (
         <li
           className={`list-none ${
@@ -329,6 +525,7 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
         />
         <button onClick={handleChatSubmit}>확인</button>
       </form>
+      </form> */}
     </div>
   );
 };
