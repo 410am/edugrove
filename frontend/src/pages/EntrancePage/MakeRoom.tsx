@@ -18,8 +18,7 @@ const MakeRoom = () => {
   const [socket, setSocket] =
     useState<Socket<DefaultEventsMap, DefaultEventsMap>>();
 
-  const { user, handleAuth, handleLogout }: HandleLoginReturnType =
-    handleLogin();
+  const { user, handleAuth }: HandleLoginReturnType = handleLogin();
   useEffect(() => {
     const newSocket: Socket<DefaultEventsMap, DefaultEventsMap> = io(
       "http://localhost:3000"
@@ -124,13 +123,13 @@ const MakeRoom = () => {
                 <input
                   className="w-[18rem] mb-8 p-4 rounded-xl bg-fuchsia-800 text-xl text-slate-100 shadow-2xl cursor-pointer hover:bg-slate-100 hover:text-fuchsia-800 hover:font-semibold"
                   type="button"
-                  value="회의 참여"
+                  value="수업 참여"
                   onClick={() => setRNModalOpen(true)}
                 />
                 <input
                   className="w-[18rem]  p-4  rounded-xl text-xl bg-blue-950 text-slate-100 shadow-2xl cursor-pointer  hover:bg-slate-100 hover:text-blue-950 hover:font-semibold"
                   type="button"
-                  value="회의 만들기"
+                  value="수업 만들기"
                   onClick={() =>
                     //user로 하니 이유는 모르겠지만 동작하지 않아서 user name으로 바꾸니 동작했다
                     user?.displayName
