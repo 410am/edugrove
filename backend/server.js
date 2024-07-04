@@ -25,13 +25,21 @@ const io = new Server(httpServer, {
   },
 });
 
+const roomMembers = {};
+
 io.on("connection", (socket) => {
-  socket.on("enter_room", (RN) => {
+  socket.on("enter_room", (RN, nickname) => {
     // 방에 입장
-    console.log(`User ${socket.id} joined room: ${RN}`);
+    console.log(`User ${nickname} joined room: ${RN}`);
+
+    if (!roomMembers[RN]) {
+      roomMembers[RN] = {};
+    }
+    roomMembers[RN][socket.id] = nickname;
+
+    socket.to(RN).emit("updateMembers", Object.values(roomMembers[RN]));
     socket.emit("RN", RN);
     socket.join(RN);
-
     socket.to(RN).emit("welcome");
     console.log(io.sockets.adapter.rooms);
   });
@@ -43,6 +51,9 @@ io.on("connection", (socket) => {
   });
   socket.on("ice", (ice, RN) => {
     socket.to(RN).emit("ice", ice);
+  });
+  socket.on("disconnect", (RN, nickname) => {
+    console.log("Client disconnected");
   });
 
   // 메시지

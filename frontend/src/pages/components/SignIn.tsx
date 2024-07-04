@@ -43,7 +43,6 @@ const SignIn = () => {
             className="hidden group-hover:block absolute p-1 -translate-x-2 hover:bg-slate-100 hover:text-slate-950 text-slate-50 hover:border-transparent cursor-pointer border border-solid border-slate-300 rounded"
             type="button"
             value="로그아웃"
-            // handleAuth에 undefined라도 넣어야하는거 해결해야할듯
             onClick={handleLogout}
           />
         </div>

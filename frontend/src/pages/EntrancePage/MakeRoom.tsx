@@ -53,7 +53,7 @@ const MakeRoom = () => {
     } else if (RN.trim() === "") {
       alert("회의 이름을 입력해주세요.");
     } else {
-      socket?.emit("enter_room", RN);
+      socket?.emit("enter_room", RN, nickname);
       setRN("");
       closeModal();
       setSigninCardIsOpen(false);
@@ -128,13 +128,13 @@ const MakeRoom = () => {
                   <input
                     className="w-[18rem] mb-8 p-4 rounded-xl bg-fuchsia-800 text-xl text-slate-100 shadow-2xl cursor-pointer hover:bg-slate-100 hover:text-fuchsia-800 hover:font-semibold"
                     type="button"
-                    value="회의 참여"
+                    value="수업 참여"
                     onClick={() => setRNModalOpen(true)}
                   />
                   <input
                     className="w-[18rem]  p-4  rounded-xl text-xl bg-blue-950 text-slate-100 shadow-2xl cursor-pointer  hover:bg-slate-100 hover:text-blue-950 hover:font-semibold"
                     type="button"
-                    value="회의 만들기"
+                    value="수업 만들기"
                     onClick={() =>
                       //user로 하니 이유는 모르겠지만 동작하지 않아서 user name으로 바꾸니 동작했다
                       user?.displayName
@@ -234,7 +234,7 @@ const MakeRoom = () => {
                   >
                     <div className="mb-10">
                       <div className="py-5 flex justify-end">
-                        <div className="pr-4 text-2xl">회의 이름</div>
+                        <div className="pr-4 text-2xl">수업 이름</div>
                         <input
                           className="border border-1 rounded-md pl-2 text-gray-900"
                           type="text"
