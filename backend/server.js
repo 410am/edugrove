@@ -38,6 +38,7 @@ io.on("connection", (socket) => {
     roomMembers[RN][socket.id] = nickname;
 
     socket.to(RN).emit("updateMembers", Object.values(roomMembers[RN]));
+    console.log(Object.values(roomMembers[RN]));
     socket.emit("RN", RN);
     socket.join(RN);
     socket.to(RN).emit("welcome");
@@ -53,7 +54,7 @@ io.on("connection", (socket) => {
     socket.to(RN).emit("ice", ice);
   });
   socket.on("disconnect", (RN, nickname) => {
-    console.log("Client disconnected");
+    console.log(`Client ${nickname} disconnected`);
   });
 
   // 메시지

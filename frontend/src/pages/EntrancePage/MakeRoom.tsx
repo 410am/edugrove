@@ -22,10 +22,6 @@ const MakeRoom = () => {
   useEffect(() => {
     const newSocket: Socket<DefaultEventsMap, DefaultEventsMap> = io(
       "http://localhost:3000"
-      // "https://172.30.1.37:3000"
-      // 172.30.1.37
-      // "https://edugrove.loca.lt"
-      // "https://19c6-59-15-255-150.ngrok-free.app/"
     );
     setSocket(newSocket);
   }, []);

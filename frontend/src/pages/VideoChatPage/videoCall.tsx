@@ -66,9 +66,9 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
         {
           urls: [
             "stun:stun.l.google.com:19302",
-            // "stun:stun1.l.google.com:19302",
-            // "stun:stun2.l.google.com:19302",
-            // "stun:stun3.l.google.com:19302",
+            "stun:stun1.l.google.com:19302",
+            "stun:stun2.l.google.com:19302",
+            "stun:stun3.l.google.com:19302",
             // "stun:stun4.l.google.com:19302",
           ],
         },
@@ -325,109 +325,99 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
     <div className="h-screen overflow-hidden">
       {/* 방 이름 */}
       <div className="text-3xl text-slate-100 border-2 border-solid bg-slate-300 bg-opacity-40 border-gray-300 border-opacity-30 w-fit px-12 py-3 rounded-b-3xl flex justify-center mx-14">{`${RN}`}</div>
-      <div className="grid grid-rows-6">
-        <div className="grid-span-5">
-          {/* 중간 블럭*/}
-          {/* peer's stream */}
-          {Chatting ? (
-            <div className="flex">
-              <div className="relative w-full overflow-hidden h-[30rem] flex justify-center mb-6 translate-y-16">
+      <div className="grid grid-rows-2">
+        <div className="">
+          <div className="flex">
+            {/* 중간 블럭*/}
+            {/* peer's stream */}
+            <div className="relative w-full overflow-hidden h-[36rem] flex justify-center my-6 mx-10">
+              <div className="w-[65rem] h-[33rem] grid ">
                 <video
-                  className="absolute w-[54rem] object-center object-cover"
-                  // ref={peerVideoRef}
-                  ref={localVideoRef}
+                  className="absolute w-[65rem] h-[33rem] object-center object-cover"
+                  ref={peerVideoRef}
+                  // ref={localVideoRef}
                   autoPlay
                   playsInline
                 ></video>
-                <div className=" h-40 w-[58rem] self-end absolute overflow-hidden grid justify-end -translate-x-5">
+                {/* {!peerConnectionRef ? ( */}
+                <div className=" h-40 w-full self-end absolute overflow-hidden ">
                   <video
-                    className="w-60 -translate-x-3"
+                    className="w-60 translate-x-[50rem]"
                     ref={localVideoRef}
                     autoPlay
                     playsInline
                   ></video>
                 </div>
               </div>
-              {/* 채팅창 */}
-              <div className="h-[38rem] w-[38rem] mb-5">
-                <div className="h-[36rem] bg-slate-300 grid grid-rows-7 py-7 justify-center bg-opacity-50 rounded-s-[4rem] text-slate-100 border-2 border-solid border-gray-300 border-opacity-30">
-                  <div className="row-span-6 overflow-hidden h-full relative">
-                    <div className=" absolute pb-5 bottom-0">
-                      {newMessages.map((newMessage, index) => (
-                        <div className="w-[22rem] text-slate-300 text-lg">
-                          <li
-                            className={`list-none ${
-                              newMessage.nickname === nickname
-                                ? "bg-gray-500 bg-opacity-90 grid justify-end  rounded-xl w-fit m-3"
-                                : "bg-fuchsia-800 bg-opacity-90 rounded-xl w-fit m-3"
-                            }`}
-                            key={index}
-                          >
-                            <div className="font-semibold text-xl text-gray-700">
-                              {`${
+              {/* peer's stream */}
+              {/* ) : (
+                <div className="relative w-full overflow-hidden h-[36rem] flex justify-center my-">
+                  <video
+                    className="absolute w-[65rem] object-center object-cover"
+                    ref={localVideoRef}
+                    autoPlay
+                    playsInline
+                  ></video>
+                </div>
+              )} */}
+            </div>
+
+            {Chatting ? (
+              <div>
+                {/* 채팅창 */}
+                <div className="h-[38rem] w-[26rem] mb-5">
+                  <div className="h-[36rem] bg-slate-300 grid grid-rows-7 py-7 justify-start pl-8 bg-opacity-50 rounded-s-[4rem] text-slate-100 border-2 border-solid border-gray-300 border-opacity-30">
+                    <div className="row-span-6 overflow-hidden h-full relative ">
+                      <div className=" absolute pb-5 bottom-0">
+                        {newMessages.map((newMessage, index) => (
+                          <div className="w-[22rem] text-slate-300 text-lg">
+                            <li
+                              className={`list-none ${
                                 newMessage.nickname === nickname
-                                  ? ""
-                                  : newMessage.nickname
+                                  ? "bg-gray-500 bg-opacity-90 grid justify-end  rounded-xl w-fit m-3"
+                                  : "bg-fuchsia-800 bg-opacity-90 rounded-xl w-fit m-3"
                               }`}
-                            </div>
-                            <div className="pl-10">{newMessage.message}</div>
-                          </li>
-                        </div>
-                      ))}
+                              key={index}
+                            >
+                              <div className="font-semibold text-xl text-gray-700">
+                                {`${
+                                  newMessage.nickname === nickname
+                                    ? ""
+                                    : newMessage.nickname
+                                }`}
+                              </div>
+                              <div className="pl-10">{newMessage.message}</div>
+                            </li>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                  {/* 채팅 input */}
-                  <div className="border-t-2 border-solid py-4 border-opacity-50 border-slate-300">
-                    <form
-                      className="text-xl"
-                      onSubmit={(e) => e.preventDefault()}
-                    >
-                      <input
-                        className="bg-inherit w-full text-2xl outline-none pl-10 text-stone-950"
-                        type="text"
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        placeholder="메시지를 입력하세요."
-                      />
-                      <button onClick={handleChatSubmit}></button>
-                    </form>
+                    {/* 채팅 input */}
+                    <div className="border-t-2 border-solid py-4 border-opacity-50 border-slate-300">
+                      <form
+                        className="text-xl"
+                        onSubmit={(e) => e.preventDefault()}
+                      >
+                        <input
+                          className="bg-inherit w-full text-xl outline-none pl-10 text-stone-950 placeholder:text-slate-300 placeholder:opacity-70"
+                          type="text"
+                          value={message}
+                          onChange={(e) => setMessage(e.target.value)}
+                          placeholder="메시지를 입력하세요."
+                        />
+                        <button onClick={handleChatSubmit}></button>
+                      </form>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div className="relative w-full overflow-hidden h-[36rem] flex justify-center my-6">
-              <video
-                className="absolute w-[65rem] object-center object-cover"
-                // ref={peerVideoRef}
-                ref={localVideoRef}
-                autoPlay
-                playsInline
-              ></video>
-              {/* {!peerConnectionRef ? (
-          <div className=" h-40 w-[65rem] self-end absolute overflow-hidden grid justify-end">
-            <video
-              className="w-60"
-              ref={localVideoRef}
-              autoPlay
-              playsInline
-            ></video>
+            ) : (
+              <div></div>
+            )}
           </div>
-        ) : (
-          <div className="relative w-full overflow-hidden h-[36rem] flex justify-center my-">
-            <video
-              className="absolute w-[65rem] object-center object-cover"
-              ref={localVideoRef}
-              autoPlay
-              playsInline
-            ></video>
-          </div>
-        )} */}
-            </div>
-          )}
         </div>
         {/* 하단 바 */}
-        <div className="w-full flex justify-center">
+        <div className="w-[91rem] justify-center">
           <div className="text-3xl text-slate-100 border-solid bg-slate-300 bg-opacity-40 border-gray-300 border-opacity-30 border-2 w-full py-2 rounded-t-full flex justify-center h-52">
             {!user ? (
               <button
@@ -524,7 +514,7 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
               </div>
             </Modal>
             <button
-              onClick={() => setChatting(true)}
+              onClick={() => setChatting(!Chatting)}
               className="w-24 text-lg mx-4 grid grid-rows-2 justify-items-center h-fit m-2 "
             >
               <img
@@ -589,6 +579,7 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
             </button>
           </div>
         </div>
+        {/* 하단바 끝 */}
       </div>
     </div>
   );
