@@ -37,11 +37,11 @@ io.on("connection", (socket) => {
     }
     roomMembers[RN][socket.id] = nickname;
 
-    socket.to(RN).emit("updateMembers", Object.values(roomMembers[RN]));
-    console.log(Object.values(roomMembers[RN]));
     socket.emit("RN", RN);
     socket.join(RN);
     socket.to(RN).emit("welcome");
+    socket.to(RN).emit("addMembers", Object.values(roomMembers[RN]).join());
+    console.log(Object.values(roomMembers[RN]));
     console.log(io.sockets.adapter.rooms);
   });
   socket.on("offer", (offer, RN) => {
@@ -67,3 +67,4 @@ io.on("connection", (socket) => {
 httpServer.listen(3000, () => {
   console.log("서버 연결 성공!");
 });
+1;

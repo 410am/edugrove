@@ -20,6 +20,7 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
   const [memberModalOpen, setMemberModalOpen] = useState<boolean>(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState<boolean>(false);
   const [Chatting, setChatting] = useState<boolean>(false);
+  const [screenShare, setScreenShare] = useState<boolean>(false);
 
   const { user, handleAuth }: HandleLoginReturnType = handleLogin();
 
@@ -171,7 +172,8 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
   });
 
   // 새 참여자 정보 받기
-  socket.on("updateMembers", (addMember: string) => {
+  socket.on("addMembers", (addMember: string) => {
+    console.log(addMember);
     setMembers(addMember.split(","));
   });
 
@@ -230,6 +232,7 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
         video: true,
         audio: false, // 대부분의 브라우저는 화면 공유 시 오디오를 지원하지 않음
       });
+      setScreenShare(true);
       return stream;
     } catch (error) {
       console.error("Error sharing screen:", error);
@@ -286,6 +289,8 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
     } else {
       console.log("중지할 화면 공유 트랙이 없음");
     }
+
+    setScreenShare(false);
   };
 
   // 모달 스타일
@@ -326,11 +331,19 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
       {/* 방 이름 */}
       <div className="text-3xl text-slate-100 border-2 border-solid bg-slate-300 bg-opacity-40 border-gray-300 border-opacity-30 w-fit px-12 py-3 rounded-b-3xl flex justify-center mx-14">{`${RN}`}</div>
       <div className="grid grid-rows-2">
-        <div className="">
-          <div className="flex">
+        <div>
+          <div
+            className={`flex items-end translate-y-4 ${
+              screenShare ? "h-[36rem] items-center" : ""
+            } `}
+          >
             {/* 중간 블럭*/}
             {/* peer's stream */}
-            <div className="relative w-full overflow-hidden h-[36rem] flex justify-center my-6 mx-10">
+            <div
+              className={`relative w-full overflow-hidden h-[36rem] flex justify-center ${
+                screenShare ? "" : "my-6"
+              } mx-10`}
+            >
               <div className="w-[65rem] h-[33rem] grid ">
                 <video
                   className="absolute w-[65rem] h-[33rem] object-center object-cover"
@@ -340,13 +353,10 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
                   playsInline
                 ></video>
                 {/* {!peerConnectionRef ? ( */}
-                <div className=" h-40 w-full self-end absolute overflow-hidden ">
-                  <video
-                    className="w-60 translate-x-[50rem]"
-                    ref={localVideoRef}
-                    autoPlay
-                    playsInline
-                  ></video>
+                <div className=" h-38 w-[65rem] self-end absolute overflow-hidden">
+                  <div className="w-60 grid">
+                    <video ref={localVideoRef} autoPlay playsInline></video>
+                  </div>
                 </div>
               </div>
               {/* peer's stream */}
@@ -366,40 +376,42 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
               <div>
                 {/* 채팅창 */}
                 <div className="h-[38rem] w-[26rem] mb-5">
-                  <div className="h-[36rem] bg-slate-300 grid grid-rows-7 py-7 justify-start pl-8 bg-opacity-50 rounded-s-[4rem] text-slate-100 border-2 border-solid border-gray-300 border-opacity-30">
-                    <div className="row-span-6 overflow-hidden h-full relative ">
-                      <div className=" absolute pb-5 bottom-0">
+                  <div className="h-[36rem] w-[26rem] bg-slate-300 grid grid-rows-7 py-7 justify-start pl-4 bg-opacity-50  rounded-s-[4rem] text-slate-100 border-2 border-solid border-gray-300 border-opacity-30">
+                    <div className="row-span-6 overflow-hidden h-full relative w-[22rem]">
+                      <div className=" absolute pb-5 bottom-0 w-full">
                         {newMessages.map((newMessage, index) => (
-                          <div className="w-[22rem] text-slate-300 text-lg">
+                          <div className="w-full text-slate-300 text-lg">
                             <li
                               className={`list-none ${
                                 newMessage.nickname === nickname
-                                  ? "bg-gray-500 bg-opacity-90 grid justify-end  rounded-xl w-fit m-3"
-                                  : "bg-fuchsia-800 bg-opacity-90 rounded-xl w-fit m-3"
+                                  ? "grid justify-center m-3 ml-14"
+                                  : "m-3"
                               }`}
                               key={index}
                             >
-                              <div className="font-semibold text-xl text-gray-700">
+                              <div className="font-semibold text-lg text-slate-100 bg-fuchsia-800 bg-opacity-60 w-fit px-3 rounded-full my-3">
                                 {`${
                                   newMessage.nickname === nickname
                                     ? ""
                                     : newMessage.nickname
                                 }`}
                               </div>
-                              <div className="pl-10">{newMessage.message}</div>
+                              <div className="pl-5 text-slate-50">
+                                {newMessage.message}
+                              </div>
                             </li>
                           </div>
                         ))}
                       </div>
                     </div>
                     {/* 채팅 input */}
-                    <div className="border-t-2 border-solid py-4 border-opacity-50 border-slate-300">
+                    <div className="border-t-2 border-solid py-4 w-[21rem] border-opacity-50 border-slate-300">
                       <form
                         className="text-xl"
                         onSubmit={(e) => e.preventDefault()}
                       >
                         <input
-                          className="bg-inherit w-full text-xl outline-none pl-10 text-stone-950 placeholder:text-slate-300 placeholder:opacity-70"
+                          className="bg-inherit w-full text-xl outline-none pl-10 text-slate-100 placeholder:text-slate-300 placeholder:opacity-70"
                           type="text"
                           value={message}
                           onChange={(e) => setMessage(e.target.value)}
@@ -417,7 +429,7 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
           </div>
         </div>
         {/* 하단 바 */}
-        <div className="w-[91rem] justify-center">
+        <div className="w-[91rem] justify-center ">
           <div className="text-3xl text-slate-100 border-solid bg-slate-300 bg-opacity-40 border-gray-300 border-opacity-30 border-2 w-full py-2 rounded-t-full flex justify-center h-52">
             {!user ? (
               <button
@@ -525,15 +537,15 @@ const VideoCall = ({ RN, nickname, socket }: HandleEnterRoomType) => {
               채팅
             </button>
             <button
-              onClick={handleScreenShare}
-              className="w-24 text-lg mx-4 grid grid-rows-2 justify-items-center h-fit m-2 "
+              onClick={screenShare ? stopScreenShare : handleScreenShare}
+              className="w-25 text-lg mx-4 grid grid-rows-2 justify-items-center h-fit m-2 "
             >
               <img
                 className="w-10 m-1"
                 src="../public/IMG/screen_share.png"
                 alt="screen share"
               />
-              화면 공유
+              {screenShare ? "화면 공유 중단" : "화면 공유"}
             </button>
             <button
               onClick={() => setSettingsModalOpen(true)}
